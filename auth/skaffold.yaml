@@ -1,0 +1,22 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+metadata:
+  name: auth-skaffold
+build:
+  artifacts:
+  - image: petr0vi4/auth-nginx
+    context: .
+    docker:
+      target: nginx
+  - image: petr0vi4/auth-php-fpm
+    context: .
+    docker:
+      target: php-fpm
+deploy:
+  helm:
+    releases:
+      - name: auth
+        chartPath: ./auth-chart
+        artifactOverrides:
+          imageNginx: petr0vi4/auth-nginx
+          imagePhpFpm: petr0vi4/auth-php-fpm

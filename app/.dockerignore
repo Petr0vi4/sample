@@ -1,0 +1,17 @@
+.dockerignore
+Dockerfile
+
+.git
+.gitignore
+
+.env.local
+
+var
+vendor
+
+.idea
+
+**/*.log
+**/*.md
+**/*.markdown
+**/LICENSE
