@@ -11,3 +11,4 @@ metadata:
 type: Opaque
 data:
   DATABASE_URI: {{ printf "pgsql://%s:%s@%s:%s/%s?charset=utf8" .Values.postgresql.postgresqlUsername .Values.postgresql.postgresqlPassword (include "postgresql.fullname" .) .Values.postgresql.service.port .Values.postgresql.postgresqlDatabase  | b64enc | quote }}
+  REDIS_URI: {{ printf "redis://%s@%s-master:%s/%s" .Values.redis.password (include "redis.fullname" .) .Values.redis.redisPort "0" | b64enc | quote }}

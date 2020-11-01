@@ -29,3 +29,6 @@ services:
     App\Controller\ArgumentResolver\InputValueResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
+
+    Predis\Client:
+        alias: snc_redis.default

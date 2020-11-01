@@ -8,8 +8,8 @@ FROM php:${PHP_VERSION}-fpm-alpine AS php-fpm-base
 
 RUN apk add --no-cache libpq postgresql-dev $PHPIZE_DEPS && \
     docker-php-ext-install opcache pdo_pgsql && \
-    pecl install apcu &&\
-    docker-php-ext-enable apcu && \
+    pecl install apcu redis &&\
+    docker-php-ext-enable apcu redis && \
     docker-php-source delete && \
     apk --purge del postgresql-dev $PHPIZE_DEPS
 RUN curl -sS https://raw.githubusercontent.com/composer/getcomposer.org/7bfcc5eaf3af1fe20e172a8676d2fb9bb8162d7e/web/installer \

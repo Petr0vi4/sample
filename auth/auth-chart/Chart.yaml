@@ -14,3 +14,10 @@ dependencies:
     condition: postgresql.enabled
     tags:
       - auth-database
+  - name: redis
+    version: 10.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+    tags:
+      - auth-redis
+

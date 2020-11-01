@@ -15,7 +15,7 @@ trait JsonResponseTrait
      */
     private SerializerInterface $serializer;
 
-    private function createJsonResponse($data, $status = Response::HTTP_OK): JsonResponse
+    private function createJsonResponse($data = null, $status = Response::HTTP_OK): JsonResponse
     {
         $data = $this->serializer->serialize($data, 'json');
 

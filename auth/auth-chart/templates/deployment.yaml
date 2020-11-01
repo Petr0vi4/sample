@@ -56,6 +56,11 @@ spec:
                 secretKeyRef:
                   name: auth-secret
                   key: DATABASE_URI
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: REDIS_URI
           ports:
             - name: php-fpm
               containerPort: 9000

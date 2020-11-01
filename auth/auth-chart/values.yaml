@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 imageNginx: petr0vi4/auth-nginx:v3
 imagePhpFpm: petr0vi4/auth-php-fpm:v3
@@ -98,10 +98,27 @@ postgresql:
   persistence:
     size: 512M
   metrics:
-    enabled: true
+    enabled: false
     serviceMonitor:
+      enabled: false
+
+redis:
+  enabled: true
+  cluster:
+    enabled: false
+  usePassword: true
+  password: redis_passwd
+  metrics:
+    enabled: false
+    metrics:
+      serviceMonitor:
+        enabled: false
+  redisPort: "6379"
+  master:
+    persistence:
       enabled: true
+      size: 64M
 
 metrics:
   serviceMonitor:
-    enabled: true
+    enabled: false
