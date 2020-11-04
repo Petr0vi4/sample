@@ -89,7 +89,7 @@ tolerations: []
 affinity: {}
 
 postgresql:
-  enabled: true
+  enabled: false
   postgresqlUsername: auth_user
   postgresqlPassword: auth_passwd
   postgresqlDatabase: auth
@@ -115,6 +115,8 @@ redis:
         enabled: false
   redisPort: "6379"
   master:
+    disableCommands:
+      - FLUSHALL
     persistence:
       enabled: true
       size: 64M
@@ -122,3 +124,6 @@ redis:
 metrics:
   serviceMonitor:
     enabled: false
+
+appService:
+  uri: http://app.sample.svc.cluster.local:8000

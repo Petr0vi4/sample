@@ -1,3 +1,4 @@
+{{- if .Values.postgresql.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -52,3 +53,4 @@ spec:
             - do:mi:mi
             - "--no-interaction"
   backoffLimit: 0
+{{- end }}

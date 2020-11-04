@@ -4,49 +4,39 @@ namespace App\Controller;
 
 use App\Controller\InputValue\LoginInputValue;
 use App\Controller\InputValue\RegisterInputValue;
-use App\Entity\User;
 use App\Repository\SessionRepository;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\ServiceClient\AppServiceClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class UserController extends AbstractController
 {
     use JsonResponseTrait;
 
     /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
      * @var SessionRepository
      */
     private SessionRepository $sessionRepository;
 
+    /**
+     * @var AppServiceClient
+     */
+    private AppServiceClient $appServiceClient;
+
     public function __construct(
         SerializerInterface $serializer,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        SessionRepository $sessionRepository
+        SessionRepository $sessionRepository,
+        AppServiceClient $appServiceClient
     ) {
         $this->serializer = $serializer;
-        $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
         $this->sessionRepository = $sessionRepository;
+        $this->appServiceClient = $appServiceClient;
     }
 
     /**
@@ -59,20 +49,16 @@ class UserController extends AbstractController
     public function auth(Request $request)
     {
         $sessionId = $request->cookies->get('session_id');
-        if (null === $sessionId) {
-            return $this->createNotAuthorizedResponse();
-        }
-        $session = $this->sessionRepository->find($sessionId);
-        if (null === $session) {
+        if (null === $sessionId || null === $session = $this->sessionRepository->find($sessionId)) {
             return $this->createNotAuthorizedResponse();
         }
 
         $response = $this->createJsonResponse(['status' => 'ok']);
-        $response->headers->set('X-UserId', $session->getUserId());
-        $response->headers->set('X-User', $session->getUsername());
-        $response->headers->set('X-First-Name', $session->getFirstName());
-        $response->headers->set('X-Last-Name', $session->getLastName());
-        $response->headers->set('X-Email', $session->getEmail());
+        $response->headers->set('X-UserId', $session->getUser()->getId());
+        $response->headers->set('X-User', $session->getUser()->getUsername());
+        $response->headers->set('X-First-Name', $session->getUser()->getFirstName());
+        $response->headers->set('X-Last-Name', $session->getUser()->getLastName());
+        $response->headers->set('X-Email', $session->getUser()->getEmail());
 
         return $response;
     }
@@ -82,24 +68,19 @@ class UserController extends AbstractController
      *
      * @param RegisterInputValue $value
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function register(RegisterInputValue $value)
     {
-        $user = $this->userRepository->findOneBy(['username' => $value->getUsername()]);
-        if (null !== $user) {
-            return $this->createNotAuthorizedResponse();
-        }
-        $user = new User();
-        $user->setUsername($value->getUsername());
-        $user->setPassword($value->getPassword());
-        $user->setFirstName($value->getFirstName());
-        $user->setLastName($value->getLastName());
-        $user->setEmail($value->getEmail());
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $user = $this->appServiceClient->register(
+            $value->getUsername(),
+            $value->getPassword(),
+            $value->getFirstName(),
+            $value->getLastName(),
+            $value->getEmail()
+        );
 
-        return $this->createJsonResponse(['id' => $user->getId()], Response::HTTP_CREATED);
+        return $this->createJsonResponse($user);
     }
 
     /**
@@ -107,14 +88,14 @@ class UserController extends AbstractController
      *
      * @param LoginInputValue $value
      *
-     * @return JsonResponse
+     * @return Response
      */
     public function login(LoginInputValue $value)
     {
-        /** @var User $user */
-        $user = $this->userRepository->findOneBy(['username' => $value->getUsername()]);
-        if (null === $user || $user->getPassword() !== $value->getPassword()) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED);
+        try {
+            $user = $this->appServiceClient->login($value->getUsername(), $value->getPassword());
+        } catch (Throwable $e) {
+            return $this->createNotAuthorizedResponse();
         }
 
         $session = $this->sessionRepository->create($user);

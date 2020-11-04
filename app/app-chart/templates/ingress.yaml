@@ -3,15 +3,14 @@ kind: Ingress
 metadata:
   name: app-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/auth-url: "http://auth.sample.svc.cluster.local:8000/auth"
+    nginx.ingress.kubernetes.io/auth-url: {{ printf "%s/auth" .Values.authService.uri }}
     nginx.ingress.kubernetes.io/auth-response-headers: "X-UserId,X-User,X-First-Name,X-Last-Name,X-Email"
 spec:
   rules:
     - host: arch.homework
       http:
         paths:
-          - path: /otusapp/petr0vi4($|/)(.*)
+          - path: /me
             backend:
               serviceName: {{ include "app-chart.fullname" . }}
               servicePort: {{ .Values.service.port }}

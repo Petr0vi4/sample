@@ -2,52 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Dto;
 
-use App\Repository\UserRepository;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="users",indexes={@ORM\Index(name="username_idx", columns={"username"})})
- */
 class User
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
     private $username;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $password;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     private $firstName;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     private $lastName;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     private $email;
 
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getUsername(): string
@@ -58,16 +34,6 @@ class User
     public function setUsername(string $username): void
     {
         $this->username = $username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
     }
 
     public function getFirstName(): string

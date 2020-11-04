@@ -30,5 +30,9 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
 
+    App\ServiceClient\AppServiceClient:
+        arguments:
+            $baseUri: '%env(APP_SERVICE_URL)%'
+
     Predis\Client:
         alias: snc_redis.default

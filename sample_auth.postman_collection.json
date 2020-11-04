@@ -6,18 +6,18 @@
 	},
 	"item": [
 		{
-			"name": "регистрация",
+			"name": "1. регистрация пользователя 1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "0e21b451-3bd3-4eba-a509-1189d94d4027",
 						"exec": [
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.collectionVariables.set('userId', pm.response.json().id.toString());"
+							"pm.collectionVariables.set('userId1', pm.response.json().id.toString());"
 						],
 						"type": "text/javascript"
 					}
@@ -27,11 +27,11 @@
 					"script": {
 						"id": "6a769c6c-db59-4991-adb7-20b5cec0f4fe",
 						"exec": [
-							"pm.collectionVariables.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'))",
-							"pm.collectionVariables.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'))",
-							"pm.collectionVariables.set(\"login\", pm.variables.replaceIn('{{$randomUserName}}'))",
-							"pm.collectionVariables.set(\"firstName\", pm.variables.replaceIn('{{$randomFirstName}}'))",
-							"pm.collectionVariables.set(\"lastName\", pm.variables.replaceIn('{{$randomLastName}}'))"
+							"pm.collectionVariables.set(\"login1\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"password1\", pm.variables.replaceIn('{{$randomPassword}}'))",
+							"pm.collectionVariables.set(\"firstName1\", pm.variables.replaceIn('{{$randomFirstName}}'))",
+							"pm.collectionVariables.set(\"lastName1\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.collectionVariables.set(\"email1\", pm.variables.replaceIn('{{$randomEmail}}'))"
 						],
 						"type": "text/javascript"
 					}
@@ -42,7 +42,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"{{login}}\", \n\t\"password\": \"{{password}}\",\n\t\"first_name\": \"{{firstName}}\",\n\t\"last_name\": \"{{lastName}}\",\n\t\"email\": \"{{email}}\"\n}\n",
+					"raw": "{\n    \"username\": \"{{login1}}\",\n    \"password\": \"{{password1}}\",\n    \"first_name\": \"{{firstName1}}\",\n    \"last_name\": \"{{lastName1}}\",\n    \"email\": \"{{email1}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -62,12 +62,95 @@
 			"response": []
 		},
 		{
-			"name": "логин",
+			"name": "2. получение пользователя недоступно без логина",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "3888262b-2eb1-42a7-8876-d30fbd04912a",
+						"id": "b5054908-96a9-4b49-9c99-4ae3a9be2d3e",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. изменение пользователя недоступно без логина",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "71d01dc7-70c9-4447-b57b-efc6bea8a585",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": {{$randomUserName}},\n    \"password\": {{$randomPassword}},\n    \"firstName\": {{$randomFirstName}},\n    \"lastName\": {{$randomLastName}},\n    \"email\": {{$randomEmail}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. вход пользователя 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1960ad3e-cb3d-4ea7-a3b8-ec414781a375",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -86,7 +169,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"username\": \"{{login}}\", \"password\": \"{{password}}\"}",
+					"raw": "{\n    \"username\": \"{{login1}}\",\n    \"password\": \"{{password1}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -106,69 +189,89 @@
 			"response": []
 		},
 		{
-			"name": "проверить данные о пользователе ",
+			"name": "5. изменение пользователя 1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "1b5a8260-4fdd-4f1f-95ba-367d1c918854",
+						"id": "50f2819a-3632-464d-a428-188c7ef1bbf2",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.test(\"Response headers contains user values\", function () {",
-							"    pm.response.to.have.status(200);",
-							"    pm.response.to.be.header(\"X-UserId\", pm.collectionVariables.get(\"userId\"));",
-							"    pm.response.to.be.header(\"X-User\", pm.collectionVariables.get(\"login\"));",
-							"    pm.response.to.be.header(\"X-First-Name\", pm.collectionVariables.get(\"firstName\"));",
-							"pm.response.to.be.header(\"X-Last-Name\", pm.collectionVariables.get(\"lastName\"));",
-							"    pm.response.to.be.header(\"X-Email\", pm.collectionVariables.get(\"email\"));",
-							"});",
-							""
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8d7dee9e-8168-4f42-bb23-9ba7a9041f93",
+						"exec": [
+							"const oldFirstName1 = pm.collectionVariables.get(\"firstName1\");",
+							"pm.collectionVariables.set(\"firstName1\", pm.variables.replaceIn('{{$randomFirstName}}'))",
+							"pm.test(\"[INFO] Change firstName from \" + oldFirstName1 + \" to \" + pm.collectionVariables.get(\"firstName1\"));",
+							"const oldLastName1 = pm.collectionVariables.get(\"lastName1\");",
+							"pm.collectionVariables.set(\"lastName1\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.test(\"[INFO] Change lastName from \" + oldLastName1 + \" to \" + pm.collectionVariables.get(\"lastName1\"));"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{IDtoken}}",
-						"type": "text"
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{login1}}\",\n    \"password\": \"{{password1}}\",\n    \"first_name\": \"{{firstName1}}\",\n    \"last_name\": \"{{lastName1}}\",\n    \"email\": \"{{email1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
 					}
-				],
+				},
 				"url": {
-					"raw": "{{baseUrl}}/auth",
+					"raw": "{{baseUrl}}/me",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"auth"
+						"me"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "получить данные о пользователе",
+			"name": "6. проверка, что пользователь 1 поменялся",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "45c335bc-1551-4c91-b782-15ea30d3183c",
+						"id": "da698291-7abe-45ab-969b-90fb60b24427",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"Response body contains user values\", function () {",
-							"    pm.expect(pm.response.json().id).to.be.equal(pm.collectionVariables.get(\"userId\"));",
-							"    pm.expect(pm.response.json().login).to.be.equal(pm.collectionVariables.get(\"login\"));",
-							"    pm.expect(pm.response.json().first_name).to.be.equal(pm.collectionVariables.get(\"firstName\"));",
-							"    pm.expect(pm.response.json().last_name).to.be.equal(pm.collectionVariables.get(\"lastName\"));",
-							"    pm.expect(pm.response.json().email).to.be.equal(pm.collectionVariables.get(\"email\"));",
+							"pm.test(\"User id is \" + pm.collectionVariables.get(\"userId1\"), function () {",
+							"});",
+							"pm.test(\"User firstName is \" + pm.collectionVariables.get(\"firstName1\"), function () {",
+							"    pm.expect(pm.response.json().firstName).to.be.equal(pm.collectionVariables.get(\"firstName1\"));",
+							"});",
+							"pm.test(\"User lastName is \" + pm.collectionVariables.get(\"lastName1\"), function () {",
+							"    pm.expect(pm.response.json().lastName).to.be.equal(pm.collectionVariables.get(\"lastName1\"));",
 							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "447fa756-ef7e-4e9f-98e9-6c304617ae05",
+						"exec": [
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -178,12 +281,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/user/me",
+					"raw": "{{baseUrl}}/me",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
 						"me"
 					]
 				}
@@ -191,7 +293,7 @@
 			"response": []
 		},
 		{
-			"name": "логаут",
+			"name": "7. выход пользователя 1",
 			"event": [
 				{
 					"listen": "test",
@@ -226,16 +328,189 @@
 			"response": []
 		},
 		{
-			"name": "получить данные после разлогина",
+			"name": "8. регистрация пользователя 2",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "1960ad3e-cb3d-4ea7-a3b8-ec414781a375",
+						"id": "41cec1dc-3bb4-49b7-b4fd-33e1c7f45d85",
 						"exec": [
-							"pm.test(\"Status code is 401\", function () {",
-							"    pm.response.to.have.status(401);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.collectionVariables.set('userId2', pm.response.json().id.toString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ecbdf0e4-8c8a-4e88-8ee7-0b30d155fc90",
+						"exec": [
+							"pm.collectionVariables.set(\"login2\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"password2\", pm.variables.replaceIn('{{$randomPassword}}'))",
+							"pm.collectionVariables.set(\"firstName2\", pm.variables.replaceIn('{{$randomFirstName}}'))",
+							"pm.collectionVariables.set(\"lastName2\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.collectionVariables.set(\"email2\", pm.variables.replaceIn('{{$randomEmail}}'))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{login2}}\",\n    \"password\": \"{{password2}}\",\n    \"first_name\": \"{{firstName2}}\",\n    \"last_name\": \"{{lastName2}}\",\n    \"email\": \"{{email2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. вход пользователя 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ffcd3160-3a06-44c1-bc08-761e5d543b86",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains a session_id cookie\", function() {",
+							"    pm.expect(pm.cookies.has('session_id')).to.be.true;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{login2}}\",\n    \"password\": \"{{password2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. изменение пользователя 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cecad392-f5f8-4894-9df1-62e8fd27921a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7ab6e989-4f03-4324-9ff2-6e6f357b5688",
+						"exec": [
+							"const oldFirstName2 = pm.collectionVariables.get(\"firstName2\");",
+							"pm.collectionVariables.set(\"firstName2\", pm.variables.replaceIn('{{$randomFirstName}}'))",
+							"pm.test(\"[INFO] Change firstName from \" + oldFirstName2 + \" to \" + pm.collectionVariables.get(\"firstName2\"));",
+							"const oldLastName2 = pm.collectionVariables.get(\"lastName2\");",
+							"pm.collectionVariables.set(\"lastName2\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.test(\"[INFO] Change lastName from \" + oldLastName2 + \" to \" + pm.collectionVariables.get(\"lastName2\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{login2}}\",\n    \"password\": \"{{password2}}\",\n    \"first_name\": \"{{firstName2}}\",\n    \"last_name\": \"{{lastName2}}\",\n    \"email\": \"{{email2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. проверка, что пользователь 2 поменялся",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "80766281-305d-4a98-86f7-b7f004f653e5",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"User id is \" + pm.collectionVariables.get(\"userId2\"), function () {",
+							"});",
+							"pm.test(\"User firstName is \" + pm.collectionVariables.get(\"firstName2\"), function () {",
+							"    pm.expect(pm.response.json().firstName).to.be.equal(pm.collectionVariables.get(\"firstName2\"));",
+							"});",
+							"pm.test(\"User lastName is \" + pm.collectionVariables.get(\"lastName2\"), function () {",
+							"    pm.expect(pm.response.json().lastName).to.be.equal(pm.collectionVariables.get(\"lastName2\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "182ed20e-8835-452d-9d2c-af5ff948a16d",
+						"exec": [
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -245,12 +520,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/user/me",
+					"raw": "{{baseUrl}}/me",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
 						"me"
 					]
 				}
@@ -283,38 +557,98 @@
 	],
 	"variable": [
 		{
-			"id": "412419ce-83d5-406b-bbeb-04e85db7dc2e",
+			"id": "0102f191-1b5d-476e-9b35-934dcdfd49be",
 			"key": "baseUrl",
-			"value": "http://arch.homework/otusapp/petr0vi4"
+			"value": "http://arch.homework"
 		},
 		{
-			"id": "64b84354-fa24-40f9-84e3-0af57b6c1b3a",
+			"id": "43b62493-3e65-4430-bba5-fc7447e1f7e1",
 			"key": "email",
 			"value": ""
 		},
 		{
-			"id": "a63271ba-aa01-49cf-88c0-517dabf60e38",
+			"id": "1843dc41-a5e8-4cdd-b195-43b29a2f719e",
 			"key": "firstName",
 			"value": ""
 		},
 		{
-			"id": "955b10bd-7a48-464a-8490-563d4b26e7e5",
+			"id": "d59bdd77-257b-4c99-b807-ce339e53f1d9",
 			"key": "lastName",
 			"value": ""
 		},
 		{
-			"id": "9df1b87d-29a3-483f-a1bd-70833f0177aa",
+			"id": "f5783dd2-9648-465c-965c-1c784c5a3f4e",
 			"key": "login",
 			"value": ""
 		},
 		{
-			"id": "3ace8400-076a-4d58-b560-1e1816b23be4",
+			"id": "2f48a19a-5eec-4c91-a1ae-8913c0de707b",
 			"key": "password",
 			"value": ""
 		},
 		{
-			"id": "f1c15182-67d9-4494-a42d-c3d11895f89b",
+			"id": "c9f99de9-2071-41f5-bddc-0b6738176412",
 			"key": "userId",
+			"value": ""
+		},
+		{
+			"id": "98e1f49c-4511-4090-ae4c-6d750725c599",
+			"key": "email1",
+			"value": ""
+		},
+		{
+			"id": "37be0d8f-0697-49e1-9b6c-0e7c6fe9f4d0",
+			"key": "firstName1",
+			"value": ""
+		},
+		{
+			"id": "c2426f58-909e-4ab6-86f5-573b8ec56ec8",
+			"key": "lastName1",
+			"value": ""
+		},
+		{
+			"id": "8947eb20-1d9b-4855-9b60-1a57dad61a8d",
+			"key": "login1",
+			"value": ""
+		},
+		{
+			"id": "e65ee3f6-9d0a-4966-9512-dfb004c80c09",
+			"key": "password1",
+			"value": ""
+		},
+		{
+			"id": "9e564f57-11bc-4145-88ae-f0f73f85881d",
+			"key": "userId1",
+			"value": ""
+		},
+		{
+			"id": "0a3e13ad-9701-4516-b671-93aa57fa1e51",
+			"key": "email2",
+			"value": ""
+		},
+		{
+			"id": "b7657bd7-d69c-4a66-ae13-995f77c15d28",
+			"key": "firstName2",
+			"value": ""
+		},
+		{
+			"id": "034c902d-84ed-499c-a706-350c479387b2",
+			"key": "lastName2",
+			"value": ""
+		},
+		{
+			"id": "c14e0e08-c201-406a-9faf-fe2ef3149871",
+			"key": "login2",
+			"value": ""
+		},
+		{
+			"id": "efb2f014-6e5b-4164-9a3b-99f7c286cdb8",
+			"key": "password2",
+			"value": ""
+		},
+		{
+			"id": "af081455-87eb-4eb1-89da-6d9bc61a256c",
+			"key": "userId2",
 			"value": ""
 		}
 	],

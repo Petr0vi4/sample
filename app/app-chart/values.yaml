@@ -89,7 +89,7 @@ tolerations: []
 affinity: {}
 
 postgresql:
-  enabled: false
+  enabled: true
   postgresqlUsername: myuser
   postgresqlPassword: passwd
   postgresqlDatabase: app
@@ -105,3 +105,6 @@ postgresql:
 metrics:
   serviceMonitor:
     enabled: false
+
+authService:
+  uri: http://auth.sample.svc.cluster.local:8000

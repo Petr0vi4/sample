@@ -12,110 +12,112 @@ class CreateUserInputValue implements InputValue
     /**
      * @Assert\NotBlank()
      *
-     * @var string|null
+     * @var string
      */
-    private ?string $username = null;
+    private $username;
 
     /**
-     * @var string|null
+     * @Assert\NotBlank()
+     *
+     * @var string
      */
-    private ?string $firstName = null;
+    private $password;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $lastName = null;
+    private $firstName;
+
+    /**
+     * @var string
+     */
+    private $lastName;
 
     /**
      * @Assert\NotBlank()
      * @Assert\Email()
      *
-     * @var string|null
+     * @var string
      */
-    private ?string $email = null;
+    private $email;
 
     /**
-     * @var string|null
+     * @return string
      */
-    private ?string $phone = null;
-
-    /**
-     * @return string|null
-     */
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
 
     /**
-     * @param string|null $username
+     * @param string $username
      */
-    public function setUsername(?string $username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getFirstName(): ?string
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
     /**
-     * @param string|null $firstName
+     * @param string $firstName
      */
-    public function setFirstName(?string $firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getLastName(): ?string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
     /**
-     * @param string|null $lastName
+     * @param string $lastName
      */
-    public function setLastName(?string $lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     /**
-     * @param string|null $email
+     * @param string $email
      */
-    public function setEmail(?string $email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    /**
-     * @param string|null $phone
-     */
-    public function setPhone(?string $phone): void
-    {
-        $this->phone = $phone;
     }
 }

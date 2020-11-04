@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: auth-config
 data:
+  APP_SERVICE_URI: {{ .Values.appService.uri }}
 ---
 apiVersion: v1
 kind: Secret

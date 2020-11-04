@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Session;
-use App\Entity\User;
+use App\Dto\Session;
+use App\Dto\User;
 use Predis\Client;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Uuid;
 
 class SessionRepository
 {
@@ -15,19 +17,22 @@ class SessionRepository
      */
     private Client $redisClient;
 
-    public function __construct(Client $redisClient)
+    /**
+     * @var SerializerInterface
+     */
+    private SerializerInterface $serializer;
+
+    public function __construct(Client $redisClient, SerializerInterface $serializer)
     {
         $this->redisClient = $redisClient;
+        $this->serializer = $serializer;
     }
 
     public function create(User $user): Session
     {
         $session = new Session();
-        $session->setUserId($user->getId());
-        $session->setUsername($user->getUsername());
-        $session->setFirstName($user->getFirstName());
-        $session->setLastName($user->getLastName());
-        $session->setEmail($user->getEmail());
+        $session->setId((string) Uuid::v4());
+        $session->setUser($user);
 
         $this->save($session);
 
@@ -36,17 +41,13 @@ class SessionRepository
 
     public function find(string $id): ?Session
     {
-        $data = json_decode($this->redisClient->get($id) ?? '', true);
-        if (empty($data['userId'])) {
+        $data = $this->redisClient->get($id);
+        if (empty($data)) {
             return null;
         }
 
-        $session = new Session($id);
-        $session->setUserId($data['userId']);
-        $session->setUsername($data['username'] ?? '');
-        $session->setFirstName($data['firstName'] ?? '');
-        $session->setLastName($data['lastName'] ?? '');
-        $session->setEmail($data['email'] ?? '');
+        /** @var Session $session */
+        $session = $this->serializer->deserialize($data, Session::class, 'json');
 
         return $session;
     }
@@ -58,12 +59,7 @@ class SessionRepository
 
     private function save(Session $session): void
     {
-        $this->redisClient->set($session->getId(), json_encode([
-            'userId' => $session->getUserId(),
-            'username' => $session->getUsername(),
-            'firstName' => $session->getFirstName(),
-            'lastName' => $session->getLastName(),
-            'email' => $session->getEmail(),
-        ]));
+        $data = $this->serializer->serialize($session, 'json');
+        $this->redisClient->set($session->getId(), $data);
     }
 }
