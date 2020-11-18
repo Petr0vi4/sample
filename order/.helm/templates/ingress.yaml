@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: order-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: {{ printf "%s/auth" .Values.authService.uri }}
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-UserId,X-User,X-First-Name,X-Last-Name,X-Email"
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /order($|/.*)
+            backend:
+              serviceName: {{ include "order-chart.fullname" . }}
+              servicePort: {{ .Values.service.port }}

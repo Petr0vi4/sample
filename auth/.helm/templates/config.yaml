@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+data:
+  USER_SERVICE_URI: {{ .Values.userService.uri }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-secret
+type: Opaque
+data:
+  REDIS_URI: {{ printf "redis://%s@%s-master:%s/%s" .Values.redis.password (include "redis.fullname" .) .Values.redis.redisPort "0" | b64enc | quote }}

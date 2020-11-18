@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Создание заказа
+  description: Создание заказа
+  version: 1.0.0
+  contact: {}
+paths:
+  /order:
+    post:
+      summary: Создать заказ
+      description: Создать заказ на заданную сумму
+      parameters: []
+      operationId: createOrder
+      responses:
+        '200':
+          description: Заказ создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+        '400':
+          description: Неправильный запрос
+      tags:
+        - orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOrderRequest'
+    parameters: []
+  '/account/{userId}/withdraw':
+    post:
+      summary: Списать деньги
+      description: Списать деньги со счёта пользователя
+      parameters: []
+      operationId: userAccountWithdraw
+      responses:
+        '200':
+          description: Деньги списаны
+        '400':
+          description: На счету недостаточно денег
+      tags:
+        - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+  '/order/{id}':
+    get:
+      summary: Your GET endpoint
+      tags:
+        - orders
+      responses:
+        '200':
+          description: Заказ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '404':
+          description: Заказ не найден
+      operationId: getOrderById
+      description: Получить заказ по идентификатору
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+  '/users/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - users
+      responses:
+        '200':
+          description: Пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+      operationId: getUserById
+      description: Получить пользователя по идентификатору
+  '/account/{userId}':
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - billing
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userAccount'
+      operationId: getUserAccount
+      description: Получить счёт пользователя
+security: []
+servers: []
+components:
+  links: {}
+  callbacks: {}
+  schemas:
+    createOrderRequest:
+      description: ''
+      type: object
+      properties:
+        amount:
+          type: number
+        userId:
+          type: integer
+      required:
+        - amount
+        - userId
+      x-examples:
+        example:
+          amount: 250
+          userId: 123456
+    order:
+      title: order
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: integer
+        amount:
+          type: number
+      x-examples:
+        example:
+          id: 0509610e-0850-4f4b-aeec-de9488d7f447
+          clientId: 123456
+          amount: 250
+      description: Заказ
+    user:
+      title: user
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+      description: Пользователь
+    userAccount:
+      title: userAccount
+      type: object
+      properties:
+        userId:
+          type: integer
+        amount:
+          type: number
+      x-examples:
+        example:
+          userId: 123456
+          amount: 100
+tags:
+  - name: orders
+    description: Сервис заказов
+  - name: billing
+    description: Сервис биллинга
+  - name: notifications
+    description: Сервис уведомлений
+  - name: users
+    description: Сервис пользователей

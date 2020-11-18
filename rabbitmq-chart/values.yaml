@@ -1,0 +1,14 @@
+rabbitmq:
+  persistence:
+    enabled: false
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  auth:
+    username: user
+    password: ngOR64BegK
+    erlangCookie: 3RK3PdP0jDZcQ83QKhMaX16NhnH9V1OW
+  service:
+    type: "NodePort"
+    managerNodePort: 30672

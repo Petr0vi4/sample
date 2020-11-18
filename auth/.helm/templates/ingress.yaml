@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: auth-ingress
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /register
+            backend:
+              serviceName: {{ include "auth-chart.fullname" . }}
+              servicePort: {{ .Values.service.port }}
+          - path: /login
+            backend:
+              serviceName: {{ include "auth-chart.fullname" . }}
+              servicePort: {{ .Values.service.port }}
+          - path: /logout
+            backend:
+              serviceName: {{ include "auth-chart.fullname" . }}
+              servicePort: {{ .Values.service.port }}

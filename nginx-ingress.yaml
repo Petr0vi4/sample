@@ -1,0 +1,19 @@
+# helm install nginx stable/nginx-ingress -f nginx-ingress.yaml -n sample
+controller:
+  kind: DaemonSet
+
+  reportNodeInternalIp: true
+
+  daemonset:
+    useHostPort: true
+    hostPorts:
+      http: 80
+      https: 443
+
+  service:
+    type: NodePort
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

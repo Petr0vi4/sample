@@ -1,32 +1,39 @@
-Архитектура решения
+## Сервис заказа. Сервис биллинга. Сервис нотификаций.
 
-### Приложение auth
+### RESTful
 
-- предоставляет внешний API для регистрации ("/register") и авторизации пользователей по паролю ("/login", "/logout")
-- предоставляет внутренний API для авторизации через token, передаваемый в cookie "session-id" ("/auth")
-- все операции над пользователями выполняет через app
-- хранит сессии авторизации в redis
+[Описание REST интерфейсов](docs/restful_openapi.yaml)
 
-![sample-auth](./sample-auth.png)
+Order Service выполняет роль оркестратора сервисов.
+Из-за синхронной модели взаимодействия схема получилась простой, но сервис "ждет" дольше, чем мог бы.
+Можно было бы отдать ответ, как только был создан заказ, а действия связанные с отсылкой почты выполнить асинхронно. 
 
-### Приложение app
+![restful.jpg](docs/restful.jpg)
 
-- предоставляет внешний API для получения/изменения текущего авторизованного пользователя ("/me")
-- авторизация происходит на Nginx Ingress через приложение auth
-- предоставляет внутренний API CRUD для пользователей
-- хранит пользователей в postgres
+### Event Notifications
 
-![sample-app](./sample-app.png)
+[Описание REST интерфейсов](docs/notification_events_openapi.yaml)
 
-### Запуск приложения
-```
-minikube addons enable ingress
-kubectl create namespace sample
-helm install app-chart ./app/app-chart -n sample
-helm install auth-chart ./auth/auth-chart -n sample
-```
+[Описание ASYNC интерфейсов](docs/notification_events_asyncapi.yaml)
 
-### Запуск тестов
-```
-newman run sample_auth.postman_collection.json
-```
+![notification_events.jpg](docs/notification_events.jpg)
+
+Отправка почты из предудыщей схемы заменена на команду, отправляемую через брокер сообщений.
+В payload событии добавлен только идентификатор заказа, всю остальную информацию сервис нотификаций запрашивают по RESTful протоколу.
+Это приводит к увеличению количества GET запросов. 
+
+## Event Collaboration
+
+[Описание ASYNC интерфейсов](docs/event-collab_asyncapi.yaml)
+
+![event-collab.jpg](docs/event-collab.jpg)
+
+Процесс описывается в реактивном стиле - порождение событий и их обработка.
+Для трансляции протоколов (HTTP -> MQ) необходимо использовать gateway.
+Все необходимые данные приходится передавать в payload сообщения.
+Необходимо уметь читать одно и то же событие в нескольких сервисах.
+
+---
+
+Я [реализовал схему в стиле Event Notifications](description.md), т.к. считаю, что она самая удачная - не такая сложная, как Event Collaboration, и не такая медленная, как RESTful.
+  

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Controller\InputValue\LoginInputValue;
 use App\Controller\InputValue\RegisterInputValue;
 use App\Repository\SessionRepository;
-use App\ServiceClient\AppServiceClient;
+use App\ServiceClient\UserServiceClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,18 +25,18 @@ class UserController extends AbstractController
     private SessionRepository $sessionRepository;
 
     /**
-     * @var AppServiceClient
+     * @var UserServiceClient
      */
-    private AppServiceClient $appServiceClient;
+    private UserServiceClient $userServiceClient;
 
     public function __construct(
         SerializerInterface $serializer,
         SessionRepository $sessionRepository,
-        AppServiceClient $appServiceClient
+        UserServiceClient $userServiceClient
     ) {
         $this->serializer = $serializer;
         $this->sessionRepository = $sessionRepository;
-        $this->appServiceClient = $appServiceClient;
+        $this->userServiceClient = $userServiceClient;
     }
 
     /**
@@ -72,7 +72,7 @@ class UserController extends AbstractController
      */
     public function register(RegisterInputValue $value)
     {
-        $user = $this->appServiceClient->register(
+        $user = $this->userServiceClient->register(
             $value->getUsername(),
             $value->getPassword(),
             $value->getFirstName(),
@@ -93,7 +93,7 @@ class UserController extends AbstractController
     public function login(LoginInputValue $value)
     {
         try {
-            $user = $this->appServiceClient->login($value->getUsername(), $value->getPassword());
+            $user = $this->userServiceClient->login($value->getUsername(), $value->getPassword());
         } catch (Throwable $e) {
             return $this->createNotAuthorizedResponse();
         }

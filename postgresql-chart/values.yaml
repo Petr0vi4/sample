@@ -1,0 +1,13 @@
+postgresql:
+  postgresqlUsername: user
+  postgresqlPassword: passwd
+#  postgresqlDatabase: pg
+  postgresqlPostgresPassword: postgres
+  service:
+    port: "5432"
+  persistence:
+    size: 512M
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false

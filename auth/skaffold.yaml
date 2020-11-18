@@ -16,7 +16,8 @@ deploy:
   helm:
     releases:
       - name: auth
-        chartPath: ./auth-chart
+        chartPath: ./.helm
+        skipBuildDependencies: true
         artifactOverrides:
           imageNginx: petr0vi4/auth-nginx
           imagePhpFpm: petr0vi4/auth-php-fpm

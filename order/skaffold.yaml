@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+metadata:
+  name: order-skaffold
+build:
+  artifacts:
+  - image: petr0vi4/order-nginx
+    context: .
+    docker:
+      target: nginx
+  - image: petr0vi4/order-php-fpm
+    context: .
+    docker:
+      target: php-fpm
+deploy:
+  helm:
+    releases:
+      - name: order
+        chartPath: ./.helm
+        skipBuildDependencies: true
+        artifactOverrides:
+          imageNginx: petr0vi4/order-nginx
+          imagePhpFpm: petr0vi4/order-php-fpm

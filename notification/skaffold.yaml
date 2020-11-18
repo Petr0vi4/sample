@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+metadata:
+  name: notification-skaffold
+build:
+  artifacts:
+  - image: petr0vi4/notification-nginx
+    context: .
+    docker:
+      target: nginx
+  - image: petr0vi4/notification-php-fpm
+    context: .
+    docker:
+      target: php-fpm
+deploy:
+  helm:
+    releases:
+      - name: notification
+        chartPath: ./.helm
+        skipBuildDependencies: true
+        artifactOverrides:
+          imageNginx: petr0vi4/notification-nginx
+          imagePhpFpm: petr0vi4/notification-php-fpm

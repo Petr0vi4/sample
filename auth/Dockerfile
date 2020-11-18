@@ -1,6 +1,6 @@
-ARG PHP_VERSION=7.4.8
-ARG NGINX_VERSION=1.18.0
-ARG COMPOSER_VERSION=1.10.9
+ARG PHP_VERSION=7.4.12
+ARG NGINX_VERSION=1.19.4
+ARG COMPOSER_VERSION=2.0.2
 
 # ------------------------------------------------------ FPM -----------------------------------------------------------
 
@@ -27,13 +27,13 @@ ENV APP_DEBUG 0
 
 USER www-data
 COPY --chown=www-data:www-data composer.json composer.lock symfony.lock .env ./
-RUN composer install --no-dev --no-ansi --no-interaction --no-progress --no-scripts --optimize-autoloader
+RUN composer install --no-dev --no-ansi --no-interaction --no-progress --no-scripts --no-autoloader
 COPY --chown=www-data:www-data migrations ./migrations
 COPY --chown=www-data:www-data public ./public
 COPY --chown=www-data:www-data bin/console ./bin/console
 COPY --chown=www-data:www-data config ./config
 COPY --chown=www-data:www-data src ./src
-RUN composer run-script post-install-cmd && composer clear-cache
+RUN composer dump-autoload --optimize && composer run-script post-install-cmd && composer clear-cache
 USER root
 
 # ----------------------------------------------------- NGINX ----------------------------------------------------------

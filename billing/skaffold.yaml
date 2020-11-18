@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+metadata:
+  name: billing-skaffold
+build:
+  artifacts:
+  - image: petr0vi4/billing-nginx
+    context: .
+    docker:
+      target: nginx
+  - image: petr0vi4/billing-php-fpm
+    context: .
+    docker:
+      target: php-fpm
+deploy:
+  helm:
+    releases:
+      - name: billing
+        chartPath: ./.helm
+        skipBuildDependencies: true
+        artifactOverrides:
+          imageNginx: petr0vi4/billing-nginx
+          imagePhpFpm: petr0vi4/billing-php-fpm

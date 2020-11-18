@@ -1,0 +1,110 @@
+asyncapi: 2.0.0
+info:
+  title: Создание заказа
+  version: '1.0.0'
+  description: |
+    Создание заказа
+defaultContentType: application/json
+
+channels:
+  order/orderRequestCreated:
+    publish:
+      message:
+        $ref: '#/components/messages/orderRequestCreated'  
+  order/orderCreated:
+    publish:
+      message:
+        $ref: '#/components/messages/orderCreated'
+  order/orderPaidSuccess:
+    publish:
+      message:
+        $ref: '#/components/messages/orderPaidSuccess'
+  order/orderPaidFail:
+    publish:
+      message:
+        $ref: '#/components/messages/orderPaidFail'
+        
+
+components:
+  messages:
+    orderRequestCreated:
+      name: orderRequestCreated
+      payload:
+        type: object
+        properties:
+          userId:
+            type: integer
+            format: int64
+            description: Идентификатор пользователя
+          amount:
+            type: number
+            format: float
+            description: Сумма заказа
+      examples:
+        - payload:
+            userId: 654
+            amount: 100.15
+    orderCreated:
+      name: orderCreated
+      payload:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Идентификатор заказа
+          userId:
+            type: integer
+            format: int64
+            description: Идентификатор пользователя
+          amount:
+            type: number
+            format: float
+            description: Сумма заказа
+      examples:
+        - payload:
+            id: 123456789
+    orderPaidSuccess:
+      name: orderPaidSuccess
+      payload:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Идентификатор заказа
+          userId:
+            type: integer
+            format: int64
+            description: Идентификатор пользователя
+          amount:
+            type: number
+            format: float
+            description: Сумма заказа
+      examples:
+        - payload:
+            id: 123456789
+            userId: 654
+            amount: 100.15
+    orderPaidFail:
+      name: orderPaidSuccess
+      payload:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: Идентификатор заказа
+          userId:
+            type: integer
+            format: int64
+            description: Идентификатор пользователя
+          amount:
+            type: number
+            format: float
+            description: Сумма заказа
+      examples:
+        - payload:
+            id: 123456789
+            userId: 654
+            amount: 100.15
