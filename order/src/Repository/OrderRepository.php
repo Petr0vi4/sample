@@ -21,6 +21,23 @@ class OrderRepository extends ServiceEntityRepository
         parent::__construct($registry, Order::class);
     }
 
+    public function version(int $userId): string
+    {
+        $criteria = compact('userId');
+        $totalCount = $this->count($criteria);
+        $maxId = $this->findMaxId($criteria);
+
+        return sha1(implode('|', [$totalCount, $maxId]));
+    }
+
+    private function findMaxId(array $criteria): ?int
+    {
+        /** @var Order|null $order */
+        $order = $this->findOneBy($criteria, ['id' => 'DESC']);
+
+        return null !== $order ? $order->getId() : null;
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

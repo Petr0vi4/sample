@@ -6,7 +6,10 @@ framework:
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             notification: 'amqp://%env(RABBITMQ_USER)%:%env(RABBITMQ_PASSWORD)%@%env(RABBITMQ_HOST)%:%env(RABBITMQ_PORT)%/%2f/notification'
+            transactional:
+                dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
 
         routing:
             # Route your messages to the transports
             'App\Message\NotifyAboutOrderCreated': notification
+            'App\Message\Envelope': transactional

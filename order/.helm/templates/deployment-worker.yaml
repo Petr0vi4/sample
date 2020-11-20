@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ include "billing-chart.fullname" . }}-worker"
+  name: "{{ include "order-chart.fullname" . }}-worker"
   labels:
-    {{- include "billing-chart.labels" . | nindent 4 }}
+    {{- include "order-chart.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      {{- include "billing-chart.selectorLabels" . | nindent 6 }}
+      {{- include "order-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "billing-chart.selectorLabels" . | nindent 8 }}
+        {{- include "order-chart.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -32,17 +32,17 @@ spec:
             - name: DATABASE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: billing-config
+                  name: order-config
                   key: DATABASE_HOST
             - name: DATABASE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: billing-config
+                  name: order-config
                   key: DATABASE_PORT
             - name: DATABASE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: billing-config
+                  name: order-config
                   key: DATABASE_NAME
             - name: DATABASE_USER
               valueFrom:
@@ -57,12 +57,12 @@ spec:
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: billing-config
+                  name: order-config
                   key: RABBITMQ_HOST
             - name: RABBITMQ_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: billing-config
+                  name: order-config
                   key: RABBITMQ_PORT
             - name: RABBITMQ_USER
               valueFrom:
@@ -74,12 +74,14 @@ spec:
                 secretKeyRef:
                   name: rabbitmq-secret
                   key: rabbitmq-password
+            - name: BILLING_SERVICE_URL
+              value: {{ .Values.billingService.uri }}
           image: {{ .Values.imagePhpFpm }}
           imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
           command:
             - bin/console
             - messenger:consume
-            - billing
+            - transactional
             - "--time-limit=3600"
             - "-vv"
       {{- with .Values.nodeSelector }}

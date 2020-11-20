@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "7955b4f9-fb61-42ea-9036-673f459a6bb0",
-		"name": "user order notification",
+		"_postman_id": "569d643a-6177-427c-8283-cb3c37a48f66",
+		"name": "idempotency",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -11,7 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "5c0b8840-ac0a-476e-ae2c-59b38f493d2d",
+						"id": "998e97a0-20c6-4bd0-becc-58997cb295c7",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -25,7 +25,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "bf84769a-a637-4e77-9a3b-3f48e5571614",
+						"id": "09b792ed-1b0b-45cd-8a29-c273a065bbb1",
 						"exec": [
 							"pm.collectionVariables.set(\"login\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							"pm.collectionVariables.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'))",
@@ -67,7 +67,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "070c1659-0795-4b16-a05e-65430e958973",
+						"id": "f8c76ad5-5685-4b33-b1ee-72df09097607",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -111,7 +111,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "fa24b73b-6055-438c-94e5-89a7f6ae3df3",
+						"id": "df23d63c-8e0a-48f9-ba56-c3d25d53449a",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -148,12 +148,144 @@
 			"response": []
 		},
 		{
-			"name": "4. сделать заказ на 80 (хватает денег)",
+			"name": "4. сделать заказ без заголовка X-Version",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "e939a2bd-0c1e-4541-9127-95bc45477227",
+						"id": "8be9a678-808d-4cec-a763-174bcba9be1d",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/order",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. сделать заказ со случаным значением X-Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b818bb1e-d640-4b41-88bf-26592d6bb3ad",
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {",
+							"    pm.response.to.have.status(409);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Version",
+						"type": "text",
+						"value": "{{$randomUUID}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/order",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. получить текущее значение X-Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a1c5bf86-8f54-4193-bb08-506280f49f67",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains version property\", function () {",
+							"    pm.expect(pm.response.json()).to.have.property('version');",
+							"});",
+							"",
+							"pm.collectionVariables.set('version1', pm.response.json().version);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0c708705-f2ea-4942-8ee0-db5eab0ce95c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/order",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. сделать заказ с полученным значением X-Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ed9c00ca-2148-4076-b316-3072f20af1c1",
 						"exec": [
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
@@ -167,10 +299,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "X-Version",
+						"type": "text",
+						"value": "{{version1}}"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"amount\": 80.0\n}",
+					"raw": "{\n    \"amount\": 10.0\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -190,18 +328,18 @@
 			"response": []
 		},
 		{
-			"name": "5. посмотреть деньги на счету пользователя и убедиться, что осталось 20",
+			"name": "8. посмотреть деньги на счету пользователя и убедиться, что осталось 90",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "69327b26-b3bb-4778-8be1-2de9540091a7",
+						"id": "bf810345-d0d3-4235-80e1-f8be9b4349f4",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"User amount is 20\", function () {",
-							"    pm.expect(pm.response.json().amount).to.be.equal(20);",
+							"pm.test(\"User amount is 90\", function () {",
+							"    pm.expect(pm.response.json().amount).to.be.equal(90);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -210,141 +348,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "a292fada-0147-44a5-bf17-906959b863fc",
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/account/me",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"account",
-						"me"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "6. посмотреть в сервисе нотификаций отправленные сообщения и убедиться, что сообщение отправилось",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "a1032561-9ae7-4072-a734-8553515711da",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"const emails = pm.response.json() || [];",
-							"const userEmail = emails.find(email => email.toAddress == \"{{email}}\" && email.messageBody.indexOf(\"№{{orderId1}}\") !== -1);",
-							"",
-							"pm.expect(userEmail).to.be.not.null;"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "cc4967b5-38db-4c35-af42-bb7366aacd1f",
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/notification/email",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"notification",
-						"email"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "7. сделать заказ на 50 (не хватает денег)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "fdc540ff-7407-4747-b4af-ecc5e8660e30",
-						"exec": [
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"",
-							"pm.collectionVariables.set('orderId2', pm.response.json().id.toString());"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"amount\": 50.0\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/order",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"order"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "8. посмотреть деньги на счету пользователя и убедиться, что их количество не поменялось (20)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "bc852521-012a-4320-bfb3-d559ff8c1bff",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.test(\"User amount is 20\", function () {",
-							"    pm.expect(pm.response.json().amount).to.be.equal(20);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "b292cd6b-cd51-4189-b5cc-f8d83d6d0db3",
+						"id": "7586d30f-721e-4243-be80-c2012718f126",
 						"exec": [
 							""
 						],
@@ -374,14 +378,14 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "abf5e820-7bb3-46e8-9ef9-81970ddc2c50",
+						"id": "ac9675f9-e324-4a21-ab8f-877643acc9d5",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"const emails = pm.response.json() || [];",
-							"const userEmail = emails.find(email => email.toAddress == \"{{email}}\" && email.messageBody.indexOf(\"№{{orderId2}}\") !== -1);",
+							"const userEmail = emails.find(email => email.toAddress == \"{{email}}\" && email.messageBody.indexOf(\"№{{orderId1}}\") !== -1);",
 							"",
 							"pm.expect(userEmail).to.be.not.null;"
 						],
@@ -404,13 +408,66 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "10. получить новое значение X-Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bb43afd1-4335-434f-bc0b-282aa8e82167",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains order with id \" + pm.collectionVariables.get('orderId1'), function () {",
+							"    const orders = pm.response.json().list || [];",
+							"    const order = orders.find(order => order.id == pm.collectionVariables.get('orderId1'));",
+							"    pm.expect(order).to.be.not.undefined;",
+							"});",
+							"pm.test(\"Response contains version property\", function () {",
+							"    pm.expect(pm.response.json()).to.have.property('version');",
+							"});",
+							"pm.test(\"Version property not equals \" + pm.collectionVariables.get('version1'), function () {",
+							"    pm.expect(pm.response.json().version).to.be.not.equal(pm.collectionVariables.get('version1'));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4b85730a-7a6d-4df9-ae09-6170b1f3ab49",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/order",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "04b809b9-811c-4c15-8ffa-d44f222037c9",
+				"id": "9e8e7178-e46b-42e5-97b8-5e04028cb076",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -420,7 +477,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "b99b9eda-48ae-45ea-bd0b-4a61d078099e",
+				"id": "c6bbd504-72e2-48e0-8c58-9ecca36036de",
 				"type": "text/javascript",
 				"exec": [
 					"pm.test(\"[INFO] Request: \" + (pm.request.body || \"\"));",
@@ -431,48 +488,43 @@
 	],
 	"variable": [
 		{
-			"id": "51ca508e-0018-47e7-bf7c-1907e5cb4517",
+			"id": "271a4649-3e3f-4fe2-871f-d216632e588b",
 			"key": "baseUrl",
 			"value": "http://arch.homework"
 		},
 		{
-			"id": "821ac413-519e-4e2d-ae5a-71fd5f3940d8",
+			"id": "49a60548-789d-40de-8f8e-47b1ac548940",
 			"key": "email",
 			"value": ""
 		},
 		{
-			"id": "b5327bbb-eb82-42ca-b3e3-5caaa815d204",
+			"id": "d3334077-ae95-46d9-86bb-894d3bd41f53",
 			"key": "firstName",
 			"value": ""
 		},
 		{
-			"id": "6b34e6e5-d55c-478a-a19b-66ee74339d87",
+			"id": "7a4f545f-78ec-4c7d-b7c2-f7455f213eec",
 			"key": "lastName",
 			"value": ""
 		},
 		{
-			"id": "9c7bc781-1e54-4ba4-b707-d57b5bb4c5d7",
+			"id": "337ddf03-f454-41c3-a819-ef1a656b156c",
 			"key": "login",
 			"value": ""
 		},
 		{
-			"id": "9890128d-c309-45a5-9d40-39c3ff6f9b08",
+			"id": "92dcc20f-2a9d-4cc9-81ea-760dbb9fce13",
 			"key": "password",
 			"value": ""
 		},
 		{
-			"id": "dedf1ca2-0450-49df-97e9-447ddedde5b5",
+			"id": "372c4f0d-78f2-4b6a-801a-c3c9439a0f17",
 			"key": "userId",
 			"value": ""
 		},
 		{
-			"id": "7d26a87c-aa57-4bea-b674-27b88a3f48f3",
-			"key": "orderId1",
-			"value": ""
-		},
-		{
-			"id": "1b099ef4-6613-4cde-8dc7-d5d3a7dd19e7",
-			"key": "orderId2",
+			"id": "e8d98511-7d3a-45d9-a67f-5629fc480387",
+			"key": "version1",
 			"value": ""
 		}
 	],

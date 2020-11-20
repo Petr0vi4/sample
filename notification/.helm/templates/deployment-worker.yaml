@@ -6,6 +6,8 @@ metadata:
     {{- include "notification-chart.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "notification-chart.selectorLabels" . | nindent 6 }}
@@ -83,6 +85,7 @@ spec:
             - messenger:consume
             - notification
             - "--time-limit=3600"
+            - "-vv"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

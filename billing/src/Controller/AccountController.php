@@ -88,16 +88,16 @@ class AccountController extends AbstractController
     public function insert(int $userId, AccountWithdrawInputValue $value)
     {
         $i = 0;
-        while ($i < 3) {
+        while ($i < 10) {
             $account = $this->accountRepository->findOneBy(['userId' => $userId]);
-            if (null === $account) {
-                if ($i === 2) {
-                    throw new NotFoundHttpException();
-                } else {
-                    usleep(100*1000);
-                }
+            if (null !== $account) {
+                break;
             }
+            usleep(100*1000);
             $i++;
+        }
+        if (null === $account) {
+            throw new NotFoundHttpException();
         }
 
         $account->setAmount($account->getAmount() + $value->getAmount());
